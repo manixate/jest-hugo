@@ -1,0 +1,29 @@
+{
+  "name": "jest-hugo",
+  "version": "1.0.0",
+  "description": "Test your hugo theme including shortcodes using Jest",
+  "main": "jest-preset.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manixate/jest-hugo.git"
+  },
+  "keywords": [
+    "jest",
+    "hugo"
+  ],
+  "author": "Muhammad Azeem <m.azeemrafiq@gmail.com> (https://github.com/manixate)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/manixate/jest-hugo/issues"
+  },
+  "homepage": "https://github.com/manixate/jest-hugo#readme",
+  "devDependencies": {
+    "jest-junit": "^6.4.0",
+    "js-beautify": "^1.10.1",
+    "lodash.merge": "^4.6.2",
+    "tmp": "^0.1.0"
+  }
+}

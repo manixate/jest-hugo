@@ -1,0 +1,6 @@
+
+{{ $partial := .Params.partialName }}
+
+<test name="{{ .Title }}">
+  {{- partial $partial . -}}
+</test>
