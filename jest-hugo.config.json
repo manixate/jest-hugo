@@ -1,0 +1,6 @@
+{
+  "baseURL": "http://localhost/",
+  "title": "Theme Tests",
+  "theme": "",
+  "ignoreFiles": [ "\\.snap" ]
+}
