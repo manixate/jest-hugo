@@ -23,6 +23,7 @@
   "dependencies": {
     "js-beautify": "^1.10.1",
     "lodash.merge": "^4.6.2",
+    "lodash.unescape": "^4.0.1",
     "tmp": "^0.1.0"
   }
 }
