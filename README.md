@@ -4,7 +4,7 @@
 Tests are written in the *tests* directory and with filename ending in **.md** extension. *Jest* is used for testing. Watch mode is also supported and you don't need separate hugo watch mode for testing.
 
 ## Usage
-1. Add jest-hugo and jest to your theme repo. `npm install --save jest manixate/jest-hugo`
+1. Add jest-hugo and jest to your theme repo. `npm install --save jest jest-hugo`
 2. Create `tests` subdirectory and a `first-test.md` file under it.
 3. Write test using `<test name='first test'>{{< myshortcode >}}</test>`
 4. Run test using `npm run jest`
