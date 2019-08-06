@@ -20,7 +20,7 @@
     "url": "https://github.com/manixate/jest-hugo/issues"
   },
   "homepage": "https://github.com/manixate/jest-hugo#readme",
-  "devDependencies": {
+  "dependencies": {
     "jest-junit": "^6.4.0",
     "js-beautify": "^1.10.1",
     "lodash.merge": "^4.6.2",
