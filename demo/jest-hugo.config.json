@@ -1,0 +1,6 @@
+{
+  "baseURL": "http://localhost/",
+  "disableKinds": ["taxonomyTerm", "home"],
+  "languageCode": "en-us",
+  "title": "Demo for Jest Hugo"
+}

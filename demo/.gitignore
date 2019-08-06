@@ -1,0 +1,8 @@
+# Junit
+junit.xml
+
+# Test output
+tests/.output
+
+# Node modules
+node_modules
