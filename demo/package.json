@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/manixate/jest-hugo",
+  "author": "Muhammad Azeem <m.azeemrafiq@gmail.com> (https://github.com/manixate)",
+  "license": "MIT",
+  "scripts": {
+    "jest": "jest"
+  },
+  "devDependencies": {
+    "jest-hugo": "../",
+    "jest": "^24.8.0",
+    "jest-junit": "^6.4.0"
+  }
+}
