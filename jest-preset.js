@@ -13,6 +13,5 @@ module.exports = {
   snapshotSerializers: [require.resolve("./jest/serializer.js")],
   noStackTrace: true,
   globalSetup: require.resolve("./jest/setup.js"),
-  testPathIgnorePatterns: ["/menu/(.+/)*_index.md"],
-  reporters: [ "default", "jest-junit" ]
+  testPathIgnorePatterns: ["/menu/(.+/)*_index.md"]
 }

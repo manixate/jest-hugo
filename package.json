@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/manixate/jest-hugo#readme",
   "dependencies": {
-    "jest-junit": "^6.4.0",
     "js-beautify": "^1.10.1",
     "lodash.merge": "^4.6.2",
     "tmp": "^0.1.0"
