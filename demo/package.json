@@ -9,7 +9,7 @@
     "jest": "jest"
   },
   "devDependencies": {
-    "jest-hugo": "mastercard/jest-hugo",
+    "jest-hugo": "1.0.0",
     "jest": "24.8.0",
     "jest-junit": "6.4.0"
   }

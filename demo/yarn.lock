@@ -1757,14 +1757,15 @@ jest-haste-map@^24.8.0:
   optionalDependencies:
     fsevents "^1.2.7"
 
-jest-hugo@mastercard/jest-hugo:
+jest-hugo@1.0.0:
   version "1.0.0"
-  resolved "https://codeload.github.com/mastercard/jest-hugo/tar.gz/34bf7c26aced2aa977680cd5d60ef809929e389e"
+  resolved "https://registry.yarnpkg.com/jest-hugo/-/jest-hugo-1.0.0.tgz#5fd89b5572e72ec4330cf3442e7e1c38d868bad3"
+  integrity sha512-mwW3YkHkToPnl0OxMoHsFhMBR3UpgKkfxq+EjnQd6VMSYaefXLbrtHWgEDA976G3wzhB+vbU8himju0WybS9aA==
   dependencies:
-    js-beautify "^1.10.1"
-    lodash.merge "^4.6.2"
-    lodash.unescape "^4.0.1"
-    tmp "^0.1.0"
+    js-beautify "1.10.1"
+    lodash.merge "4.6.2"
+    lodash.unescape "4.0.1"
+    tmp "0.1.0"
 
 jest-jasmine2@^24.8.0:
   version "24.8.0"
@@ -2002,7 +2003,7 @@ jest@24.8.0:
     import-local "^2.0.0"
     jest-cli "^24.8.0"
 
-js-beautify@^1.10.1:
+js-beautify@1.10.1:
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.10.1.tgz#bdfe738ddbcaa12e4fced5af2d7cfad59f60ac0a"
   integrity sha512-4y8SHOIRC+/YQ2gs3zJEKBUraQerq49FJYyXRpdzUGYQzCq8q9xtIh0YXial1S5KmonVui4aiUb6XaGyjE51XA==
@@ -2169,7 +2170,7 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lodash.merge@^4.6.2:
+lodash.merge@4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
@@ -2179,7 +2180,7 @@ lodash.sortby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
   integrity sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
 
-lodash.unescape@^4.0.1:
+lodash.unescape@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
   integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
@@ -3330,7 +3331,7 @@ throat@^4.0.0:
   resolved "https://registry.yarnpkg.com/throat/-/throat-4.1.0.tgz#89037cbc92c56ab18926e6ba4cbb200e15672a6a"
   integrity sha1-iQN8vJLFarGJJua6TLsgDhVnKmo=
 
-tmp@^0.1.0:
+tmp@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.1.0.tgz#ee434a4e22543082e294ba6201dcc6eafefa2877"
   integrity sha512-J7Z2K08jbGcdA1kkQpJSqLF6T0tdQqpR2pnSUXsIchbPdTI9v3e85cLW0d6WDhwuAleOV71j2xWs8qMPfK7nKw==
