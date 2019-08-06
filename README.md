@@ -9,6 +9,7 @@ Tests are written in the *tests* directory and with filename ending in **.md** e
 3. Write test using `<test name='first test'>{{< myshortcode >}}</test>`
 4. Run test using `npm run jest`
 5. A snapshot subdirectory will be created at the same level as your test file
+6. Update snapshots with `jest -u`
 
 For watch mode just use `jest --watchAll` which will rerun tests whenever there is an update
 
