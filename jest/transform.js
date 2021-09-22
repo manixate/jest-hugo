@@ -89,7 +89,7 @@ module.exports = {
       .update("\0", "utf8")
       .update(testFileData)
       .update("\0", "utf8")
-      .update(configString)
+      .update(JSON.stringify(configString))
       .update("\0", "utf8")
       .digest("hex");
   },
