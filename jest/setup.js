@@ -7,6 +7,7 @@ tmp.setGracefulCleanup();
 
 const defaultJestConfig = require("../jest-hugo.config.json");
 const defaultJestHugoTestDir = "tests";
+const defaultJestHugoExecutable = "hugo";
 
 const getJestHugoConfig = rootDir => {
   const configPath = path.resolve(rootDir, "jest-hugo.config.json");
@@ -42,7 +43,9 @@ module.exports = async globalConfig => {
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig));
 
-    await childProcess.execFileSync("hugo", ["--config", hugoConfigFile.name], {
+    const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable;
+
+    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name], {
       stdio: ["pipe", "pipe", "pipe"],
       encoding: "utf8",
       cwd: testDir

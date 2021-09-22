@@ -1,6 +1,6 @@
 # jest-hugo
 [![](https://img.shields.io/npm/v/jest-hugo.svg)](https://www.npmjs.com/package/jest-hugo)
-[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/jest-hugo/blob/master/LICENSE)
+[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/manixate/jest-hugo/blob/master/LICENSE)
 
 ## Overview
 `jest-hugo` allows you to test your Hugo theme.
@@ -20,6 +20,7 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 ## Configuration
 - You can provide your own Hugo config by adding a `jest-hugo.config.json`
 - If you need to change the test output directory, you can provide a path in `JEST_HUGO_TEST_DIR` environment variable
+- You can specify path to your `hugo` executable by setting `JEST_HUGO_EXECUTABLE` environment variable. By default it uses the one in environment path
 
 ## Guidelines
 - Each test should be written in Markdown
@@ -36,9 +37,10 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 3. Run `npm install` or `yarn install`
 4. Run tests using `npm run jest` or `yarn jest`
 
+The demo uses Hugo 0.55
+
 ## Requirements
-1. Hugo v0.55
-2. Jest 24+
-3. NodeJS 8+
+1. Jest 24+
+2. NodeJS 8+
 
 Feel free to give feedback.
