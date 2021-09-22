@@ -72,7 +72,7 @@ function generateTestCases(testPath) {
 }
 
 module.exports = {
-  getCacheKey: (source, filepath, configString, { instrument }) => {
+  getCacheKey: (source, filepath, configString) => {
     const jestHugoOutputDir = process.env.JEST_HUGO_OUTPUT_DIR;
     const jestHugoContentDir = process.env.JEST_HUGO_CONTENT_DIR;
 
@@ -91,7 +91,6 @@ module.exports = {
       .update("\0", "utf8")
       .update(configString)
       .update("\0", "utf8")
-      .update(instrument ? "instrument" : "")
       .digest("hex");
   },
   process: function(source, filepath) {
