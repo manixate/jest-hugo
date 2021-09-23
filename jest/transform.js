@@ -55,6 +55,7 @@ function generateTestCases(testPath) {
   const generatedTestCases = []
   for (key in testCases) {
     const value = testCases[key]
+      .replace(/\\/g, '/') // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
       .replace(/[^\\]'/g, '\\\'')
       .replace(/\n/g, '\\n');
 
