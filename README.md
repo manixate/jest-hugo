@@ -24,12 +24,12 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 
 ## Guidelines
 - Each test should be written in Markdown
-- Tests should be compatible with Hugo v0.55
 - Each test case in a test file should be enclosed in a `<test name="test name">` tag where `name` can be any descriptive name representing the test
 - To ignore a Markdown file from testing, use *.ignore.md* as the extension instead
 - Tests also support asserting errors from `errorf`
 - The Hugo output will be generated under `<test dir>/.output`. It will be auto-cleaned.
 - Usage with test reporters is also supported. See `demo` subdirectory.
+- For Hugo 0.60+, enable `unsafe: true` for goldmark renderer `markup.goldmark.renderer` https://gohugo.io/getting-started/configuration-markup.
 
 ## Demo
 1. Checkout this repo
