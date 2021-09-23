@@ -26,10 +26,12 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 - Each test should be written in Markdown
 - Each test case in a test file should be enclosed in a `<test name="test name">` tag where `name` can be any descriptive name representing the test
 - To ignore a Markdown file from testing, use *.ignore.md* as the extension instead
-- Tests also support asserting errors from `errorf`
+- Tests also support asserting errors from `errorf`. Currently this is only supported on Hugo <= 0.61.0. Newer versions of Hugo don't print error to output HTML. The support for newer versions of hugo will be added later.
 - The Hugo output will be generated under `<test dir>/.output`. It will be auto-cleaned
 - Usage with test reporters is also supported. See `demo` subdirectory
-- For Hugo 0.60+, enable `unsafe: true` for goldmark renderer `markup.goldmark.renderer` https://gohugo.io/getting-started/configuration-markup
+- For Hugo 0.60+
+  - Enable `unsafe: true` for goldmark renderer `markup.goldmark.renderer` https://gohugo.io/getting-started/configuration-markup
+  - Ensure that the test has frontend (empty works too). See `demo/tests/callout.md` for example.
 
 ## Demo
 1. Checkout this repo
@@ -42,5 +44,6 @@ The demo uses Hugo 0.55
 ## Requirements
 1. Jest 24+
 2. NodeJS 8+
+3. Hugo <= 0.61.0
 
 Feel free to give feedback.

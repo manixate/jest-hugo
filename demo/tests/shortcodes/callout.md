@@ -1,3 +1,5 @@
+---
+---
 <test name="should render successful with alert">
   {{% callout type="alert" %}}
   An alert type callout
