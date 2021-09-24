@@ -1,0 +1,4 @@
+{{ $error := (.Get "error") }}
+{{ $id := now.Nanosecond }}
+{{- warnf "%s: 'jest-expected-error' %d|%s" .Page.File.Path $id $error }}
+<div id="expected-error" data-id="{{ $id }}" data-error="{{ $error }}" />

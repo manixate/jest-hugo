@@ -24,6 +24,7 @@
     "js-beautify": "1.14.0",
     "lodash.merge": "4.6.2",
     "lodash.unescape": "4.0.1",
-    "tmp": "0.2.1"
+    "tmp": "0.2.1",
+    "cheerio": "^1.0.0-rc.10"
   }
 }
