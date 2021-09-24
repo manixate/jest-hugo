@@ -4,8 +4,7 @@
 name: Publish
 
 on:
-  release:
-    types: [created, edited]
+  release
 
 jobs:
   publish-npm:
