@@ -6,7 +6,9 @@
   "author": "Muhammad Azeem <m.azeemrafiq@gmail.com> (https://github.com/manixate)",
   "license": "MIT",
   "scripts": {
-    "jest": "jest"
+    "jest": "jest",
+    "jestNoCache": "jest --no-cache",
+    "jestClearCache": "jest --clearCache"
   },
   "devDependencies": {
     "jest-hugo": "file:..",
