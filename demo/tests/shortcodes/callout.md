@@ -1,6 +1,6 @@
 ---
 ---
-<div> <!-- Only needed with Hugo <= **version TBD** -->
+<div> <!-- Only needed with Hugo < v0.60.0 -->
   <test name="should render successful with alert">
   {{% callout type="alert" %}}
   An alert type callout
