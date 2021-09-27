@@ -53,7 +53,7 @@ module.exports = async globalConfig => {
   } catch (error) {
     if (error.stderr && !error.stdout.includes("ERROR")) {
       // stderr represent errors
-      // stdout will not have "ERROR" string if the errros are during build process e.g parsing failed.
+      // stdout will not have "ERROR" string if the errors are during build process e.g parsing failed.
       throw error;
     } else {
       // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
