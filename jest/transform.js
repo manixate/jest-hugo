@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const cheerio = require('cheerio');
 
 /*
   Regex representing a test case
@@ -35,39 +36,55 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
 /**
  * Generate test cases from the test file
  * 
+ * @param
  * @param {string} testPath Path of the test file
  * 
  * @returns {string} Generated test case string
  */
-function generateTestCases(testPath) {
+function generateTestCases(testPath, errors) {
+  console.log("errors", errors);
   const fileData = fs.readFileSync(testPath, "utf-8");
 
-  const testCases = {};
-  var match;
-  do {
-    match = regex.exec(fileData);
-    if (match) {
-      testCases[match[1]] = match[2];
-    }
-  } while (match);
+  const $ = cheerio.load(fileData, null, false);
+  const tests = $('test');
+  if (tests.length === 0) {
+    return [];
+  }
 
-  // Create test cases
-  const generatedTestCases = []
-  for (key in testCases) {
-    const value = testCases[key]
-      .replace(/\\/g, '/') // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
+  console.log('');
+  const generatedTestCases = tests.map((i, test) => {
+    const testTitle = test.attribs.name;
+    const value = $(test).html()
       .replace(/[^\\]'/g, '\\\'')
       .replace(/\n/g, '\\n');
 
-    var testTitle = key.replace(/[^\\]'/g, '\\\'')
+    // Test for asserting on errors
+    const expectedError = $('div#expected-error', test);
+    if (expectedError.length > 0) {
+      const errorId = expectedError.attr('data-id');
+      const errorText = expectedError.attr('data-error');
+      // Pick the corresponding error from the logs
+      const error = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual
+        .replace(/'/g, '\\\'');
 
-    generatedTestCases.push([
-      `it ('${testTitle}', () => {`,
-      `  const value = '${value}';`,
-      "  expect({custom: 'beautify', input: value}).toMatchSnapshot();",
-      "})"
-    ].join("\n"));
-  }
+      const expected = errorText.replace(/'/g, '\\\'');
+
+      return [
+        `it ('${testTitle}', () => {`,
+        `  const actual = '${error}';`,
+        `  const expected = '${expected}';`,
+        `  expect(actual).toEqual(expected);`,
+        "})"
+      ].join("\n");
+    } else {
+      return [
+        `it ('${testTitle}', () => {`,
+        `  const value = '${value}';`,
+        "  expect({custom: 'beautify', input: value}).toMatchSnapshot();",
+        "})"
+      ].join("\n");
+    }
+  }).get();
 
   return generatedTestCases;
 }
@@ -95,13 +112,22 @@ module.exports = {
       .digest("hex");
   },
   process: function(source, filepath) {
+    console.log("filepath", filepath);
     const jestHugoOutputDir = process.env.JEST_HUGO_OUTPUT_DIR;
     const jestHugoContentDir = process.env.JEST_HUGO_CONTENT_DIR;
 
     const hugoTestPath = findHugoTestOutputPath(filepath, jestHugoContentDir, jestHugoOutputDir)
     const testName = path.basename(path.dirname(hugoTestPath));
 
-    const testCases = generateTestCases(hugoTestPath);
+    var errors = null;
+    const errorFile = path.resolve(jestHugoOutputDir, 'output.err.json');
+    if (fs.existsSync(errorFile)) {
+      errors = JSON.parse(fs.readFileSync(errorFile));
+    }
+
+    const relativeFilePath = path.relative(jestHugoContentDir, filepath);
+
+    const testCases = generateTestCases(hugoTestPath, errors[relativeFilePath]);
     const code = [
       `describe('${testName}', () => {`,
       testCases.join("\n\n"),
