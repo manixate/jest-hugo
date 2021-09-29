@@ -2,16 +2,17 @@
 
 [![](https://img.shields.io/npm/v/jest-hugo.svg)](https://www.npmjs.com/package/jest-hugo)
 [![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/manixate/jest-hugo/blob/master/LICENSE)
+[![](https://github.com/manixate/jest-hugo/workflows/Demo/badge.svg)](https://github.com/manixate/jest-hugo/actions/workflows/demo.yml)
 
 ## Overview
-`jest-hugo` allows you to test your Hugo theme.
+`jest-hugo` allows you to test your [Hugo](https://github.com/gohugoio/hugo) theme.
 
 Tests are written in the *tests* directory in files having the *.md* extension. [Jest](https://jestjs.io/) is used for testing. Watch mode is also supported and you don't need separate Hugo watch mode for testing.
 
 ## Requirements
 1. Jest 24+
 2. NodeJS 8+
-3. Hugo >= [0.55](https://github.com/gohugoio/hugo/releases/tag/v0.55.0)
+3. Hugo >= [v0.55.0](https://github.com/gohugoio/hugo/releases/tag/v0.55.0)
 
 ## Usage
 1. Add jest-hugo and jest to your theme repo: `npm install --save jest jest-hugo`
@@ -36,25 +37,26 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 - The Hugo output is generated under `<test dir>/.output` and is auto-cleaned
 - Usage with test reporters is also supported. For that, see `demo` subdirectory.
 
+## Demo
+1. Checkout this repo
+2. Run `npm install` or `yarn install`
+3. Go to the `demo` subdirectory
+4. Run `npm install` or `yarn install`
+5. Run tests using `npm run jest` or `yarn jest`
+
+The demo was tested with Hugo [v0.55.0](https://github.com/gohugoio/hugo/releases/tag/v0.55.0) up to Hugo [v0.59.1](https://github.com/gohugoio/hugo/releases/tag/v0.59.1).
+
 ## Known Limitations
-- Asserting errors from `errorf` is currently only supported with Hugo <= [0.61.0](https://github.com/gohugoio/hugo/releases/tag/v0.61.0) (see issue [#20](https://github.com/manixate/jest-hugo/issues/20)). The support for newer versions of hugo will be added later.
-- For Hugo [0.60.0](https://github.com/gohugoio/hugo/releases/tag/v0.60.0)+, it is required to:
+- Asserting errors from `errorf` is currently only supported with Hugo <= [v0.61.0](https://github.com/gohugoio/hugo/releases/tag/v0.61.0) (see issue [#20](https://github.com/manixate/jest-hugo/issues/20)). The support for newer versions of hugo will be added later.
+- For Hugo [v0.60.0](https://github.com/gohugoio/hugo/releases/tag/v0.60.0)+, it is required to:
   - Enable `unsafe: true` for goldmark renderer `markup.goldmark.renderer` https://gohugo.io/getting-started/configuration-markup
   - Ensure that the test has a front matter (an empty one works too). See `demo/tests/callout.md` for example.
-- For Hugo < [0.60.0](https://github.com/gohugoio/hugo/releases/tag/v0.60.0), tests cases should always be wrapped into a `<div />`. Example:
+- For Hugo < [v0.60.0](https://github.com/gohugoio/hugo/releases/tag/v0.60.0), tests cases should always be wrapped into a `<div />`. Example:
 ```html
 <div>
   <test name="first test">{{< MyShortcode >}}</test>
   ...
 </div>
 ```
-
-## Demo
-1. Checkout this repo
-2. Go to the `demo` subdirectory
-3. Run `npm install` or `yarn install`
-4. Run tests using `npm run jest` or `yarn jest`
-
-The demo was tested with Hugo [0.55.6](https://github.com/gohugoio/hugo/releases/tag/v0.55.6)
 
 Feel free to give feedback.
