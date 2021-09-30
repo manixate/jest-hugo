@@ -44,7 +44,7 @@ For watch mode, just use `jest --watchAll` which will rerun tests whenever there
 4. Run `npm install` or `yarn install`
 5. Run tests using `npm run jest` or `yarn jest`
 
-The demo was tested with Hugo [v0.55.0](https://github.com/gohugoio/hugo/releases/tag/v0.55.0) up to Hugo [v0.59.1](https://github.com/gohugoio/hugo/releases/tag/v0.59.1).
+The demo was tested with Hugo [v0.55.0](https://github.com/gohugoio/hugo/releases/tag/v0.55.0) up to Hugo [v0.61.0](https://github.com/gohugoio/hugo/releases/tag/v0.61.0).
 
 ## Known Limitations
 - Asserting errors from `errorf` is currently only supported with Hugo <= [v0.61.0](https://github.com/gohugoio/hugo/releases/tag/v0.61.0) (see issue [#20](https://github.com/manixate/jest-hugo/issues/20)). The support for newer versions of hugo will be added later.
