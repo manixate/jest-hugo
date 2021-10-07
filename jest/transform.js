@@ -57,6 +57,7 @@ function generateTestCases(testPath) {
     const value = testCases[key]
       .replace(/\\/g, '/') // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
       .replace(/[^\\]'/g, '\\\'')
+      .replace(/\r\n/g, '\\n') // CRLF on Windows with Hugo 0.60+
       .replace(/\n/g, '\\n');
 
     var testTitle = key.replace(/[^\\]'/g, '\\\'')
