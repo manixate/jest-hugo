@@ -1,16 +1,15 @@
 const beautify = require('js-beautify').html;
-const unescape = require('lodash.unescape');
 
 module.exports = {
-  print(val) {
-    return beautify(unescape(val.input), { 
-      wrap_attributes: 'force', 
-      indent_size: 2, 
-      unescape_strings: true 
-    });
+  print(val, serialize, indent) {
+    if (val.custom == 'beautify') {
+      return beautify(val.input, { wrap_attributes: 'force', indent_size: 2 });
+    } else {
+      return serialize(val.input);
+    }
   },
 
   test(val) {
-    return val.custom === 'beautify';
+    return !!val.custom;
   },
 }
