@@ -24,12 +24,12 @@ exports[`callout should render successful with warning 1`] = `
 
 exports[`callout should show error when enter invalid type. 1`] = `
 <div>
-  shortcodes/callout.md: Invalid callout's type 'invalid'. Expecting one of 'alert warning'
+  shortcodes/callout.md: Invalid callout&#39;s type &#39;invalid&#39;. Expecting one of &#39;alert warning&#39;
 </div>
 `;
 
 exports[`callout should show error when missing type parameter. 1`] = `
 <div>
-  shortcodes/callout.md: Invalid callout's type '%!s(<nil>)'. Expecting one of 'alert warning'
+  shortcodes/callout.md: Invalid callout&#39;s type &#39;%!s(&lt;nil&gt;)&#39;. Expecting one of &#39;alert warning&#39;
 </div>
 `;
