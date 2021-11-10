@@ -57,7 +57,7 @@ module.exports = async globalConfig => {
       throw error;
     } else {
       // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
-      console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n"); // green color output
+      console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error ); // green color output
     }
   }
 };
