@@ -17,14 +17,19 @@ const getJestHugoConfig = rootDir => {
     customConfig = require(configPath);
   }
 
-  return merge(defaultJestConfig, customConfig, {
+  let config = merge(defaultJestConfig, {
     contentDir: ".",
     publishDir: ".output",
     resourceDir: ".output/.tmp",
     dataDir: "data",
     layoutDir: path.resolve(__dirname, "../hugo/layouts"),
     themesDir: rootDir
-  });
+  }, customConfig);
+
+  // In case the config uses relative paths
+  config.layoutDir = path.resolve(rootDir, config.layoutDir)
+  config.themesDir = path.resolve(rootDir, config.themesDir)
+  return config
 };
 
 module.exports = async globalConfig => {
