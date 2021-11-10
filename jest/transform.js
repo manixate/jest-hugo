@@ -33,6 +33,15 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
 }
 
 /**
+ * Return the "{folder}/{file}.md" part.
+ */
+function extractPathFromErrorf(output) {
+  var regexp = /(.*).md:/
+  var matches = regexp.exec(output)
+  return (matches && matches.length > 0) ? matches[1] : ""
+}
+
+/**
  * Generate test cases from the test file
  * 
  * @param {string} testPath Path of the test file
@@ -54,8 +63,11 @@ function generateTestCases(testPath) {
   // Create test cases
   const generatedTestCases = []
   for (key in testCases) {
+
+    // Normalize file paths in errors ("{folder}\{file}.md: ..." => "{folder}/{file}.md: ...")
+    const filepath = extractPathFromErrorf(testCases[key])
     const value = testCases[key]
-      .replace(/\\/g, '/') // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
+      .replace(filepath, filepath.replace(/\\/g, '/'))
       .replace(/[^\\]'/g, '\\\'')
       .replace(/\r\n/g, '\\n') // CRLF on Windows with Hugo 0.60+
       .replace(/\n/g, '\\n');
