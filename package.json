@@ -1,6 +1,6 @@
 {
   "name": "jest-hugo",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Test your hugo theme including shortcodes using Jest",
   "main": "jest-preset.js",
   "scripts": {
