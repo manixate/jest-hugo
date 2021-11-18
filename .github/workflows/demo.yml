@@ -1,7 +1,9 @@
 name: Demo
 'on':
   push:
-    branches: master
+    branches: 
+      - master
+      - feature/**
   schedule:
     - cron: 0 1 * * *
   pull_request:
