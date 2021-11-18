@@ -62,7 +62,9 @@ module.exports = async globalConfig => {
 
     const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable;
 
-    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name, '--debug', '--logFile', 'output.log'], {
+    // [TODO] Check if this can be avoided somehow. Hugo needs the directory to be present for writing the log file
+    fs.mkdirSync(path.resolve(testDir, jestHugoConfig.publishDir));
+    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name, '--logFile', 'output.log'], {
       stdio: ["pipe", "pipe", "pipe"],
       encoding: "utf8",
       cwd: testDir
@@ -177,7 +179,7 @@ module.exports = async globalConfig => {
         //     }
         //     return map;
         //   }, {});
-        fs.mkdirSync(path.resolve(testDir, jestHugoConfig.publishDir));
+
         fs.writeFileSync(path.resolve(testDir, jestHugoConfig.publishDir, 'output.err.json'), JSON.stringify(output, null, 2));
       }
       // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
