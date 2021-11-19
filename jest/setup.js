@@ -57,138 +57,76 @@ module.exports = async globalConfig => {
     process.env.JEST_HUGO_TEST_DIR || defaultJestHugoTestDir
   );
 
-  process.env.JEST_HUGO_CONTENT_DIR = path.resolve(testDir, jestHugoConfig.contentDir);
-  process.env.JEST_HUGO_OUTPUT_DIR = path.resolve(testDir, jestHugoConfig.publishDir);
+  const outputDir = path.resolve(testDir, jestHugoConfig.publishDir)
+  process.env.JEST_HUGO_CONTENT_DIR = path.resolve(testDir, jestHugoConfig.contentDir)
+  process.env.JEST_HUGO_OUTPUT_DIR = outputDir
   
   try {
     // Create temporary hugo config json file. It will be cleaned up automatically.
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig));
 
+    // Creates .output if it doesn't exist
+    const outputDirExists = fs.existsSync(outputDir)
+    if (!outputDirExists) {
+      fs.mkdirSync(outputDir)
+    }
+    
+    // Run Hugo
     const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable;
-
-    // [TODO] Check if this can be avoided somehow. Hugo needs the directory to be present for writing the log file
-    fs.mkdirSync(path.resolve(testDir, jestHugoConfig.publishDir));
-    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name, '--logFile', 'output.log'], {
+    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name], {
       stdio: ["pipe", "pipe", "pipe"],
       encoding: "utf8",
       cwd: testDir
     });
   } catch (error) {
-    console.log(error);
     if (error.stderr && !error.stdout.includes("ERROR")) {
       // stderr represent errors
       // stdout will not have "ERROR" string if the errors are during build process e.g parsing failed.
       throw error;
-    } else {
-      if (error.stdout.includes("ERROR")) {
-        const groupedLogByFilename = error.stdout.split("\n")
-          .filter((s) => (s.startsWith("WARN") && s.indexOf("'jest-expected-error") >= 0) || s.startsWith("ERROR"))
-          .reduce((map, log) => {
-            const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "));
-            if (map[logDetail.filename]) {
-              map[logDetail.filename].push({ level: logDetail.level, log: logDetail.log });
-            } else {
-              map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log }];
-            }
-            return map;
-          }, {});
-        const output = {};
-        Object.entries(groupedLogByFilename).forEach(([key, detail]) => {
-          console.log("key", key, detail);
-          const expectedErrorGroups = [];
-          for (let index = 0; index < detail.length; index++) {
-            const logDetail = detail[index];
-            const group = {
-              expected: null, actual: null
-            };
-            if (logDetail.level === "WARN") {
-              group.expected = logDetail.log;
-              if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
-                group.actual = detail[index + 1].log;
-                index++;
-              }
+    }
 
-              expectedErrorGroups.push(group);
-            }
+    const groupedLogByFilename = error.stdout
+      .replace("Building sites … ", "")
+      .split("\n")
+      .filter((s) => (s.startsWith("WARN") && s.indexOf("'jest-expected-error") >= 0) || s.startsWith("ERROR"))
+      .reduce((map, log) => {
+        const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "));
+        if (map[logDetail.filename]) {
+          map[logDetail.filename].push({ level: logDetail.level, log: logDetail.log });
+        } else {
+          map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log }];
+        }
+        return map;
+      }, {});
+    const output = {};
+    Object.entries(groupedLogByFilename).forEach(([key, detail]) => {
+      console.log("key", key, detail);
+      const expectedErrorGroups = [];
+      for (let index = 0; index < detail.length; index++) {
+        const logDetail = detail[index];
+        const group = {
+          expected: null, actual: null
+        };
+        if (logDetail.level === "WARN") {
+          group.expected = logDetail.log;
+          if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
+            group.actual = detail[index + 1].log;
+            index++;
           }
 
-          output[key] = expectedErrorGroups;
-        });
-
-        console.log("grouping", output);
-        // const groupedLogByExpectations = groupedLogByFilename.reduce((map, detail) => {
-        //   const expectedErrorGroups = [];
-        //   for (let index = 0; index < array.length; index++) {
-        //     const group = {
-        //       expected: null, actual: null
-        //     };
-        //     if (logDetail.level === "WARN") {
-        //       group.expected = logDetail.log;
-        //       if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
-        //         group.actual = detail[index + 1].log;
-        //         index++;
-        //       }
-
-        //       expectedErrorGroups.push(group);
-        //     }
-        //   }
-        //   const updatedDetails = detail.forEach((logDetail, index) => {
-        //     const group = {
-        //       expected: null, actual: null
-        //     };
-        //     if (logDetail.level === "WARN") {
-        //       group.expected = logDetail.log;
-        //       if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
-        //         group.actual = detail[index + 1].log;
-        //       }
-        //     }
-
-        //     expectedErrorGroups.push(group);
-        //   })
-        //   if (map[logDetail.filename]) {
-        //     map[logDetail.filename].push({ level: logDetail.level, log: logDetail.log });
-        //   } else {
-        //     map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log }];
-        //   }
-        // }, {});
-        //   .forEach((logLine, idx, arr) => {
-        //     const logDetails = extractInfoFromLog(logLine);
-
-        //     // If this the expected error log then check the next item to find out thrown error
-        //     if (logDetails.level..startsWith("WARN") && logLine.contains("'jest-expected-error'")) {
-        //       if (i < arr.length - 1 && arr[i + 1].startsWith("ERROR")
-        //       return i;
-        //     }
-        //   })
-        //   .map((s, i) => {
-        //     // If this the expected error log then check the next item to find out thrown error
-        //     if (s.startsWith("WARN") && s.contains("'jest-expected-error'")) {
-        //       if (i < error.length)
-        //       return i;
-        //     }
-        //   })
-        //   .filter((s) => (s.startsWith("WARN") && s.contains("jest-hugo-output")) || s.startsWith("ERROR"))
-        //   .reduce((map, errorLog) => {
-        //     // Each error log line is of format:
-        //     // ERROR <YYYY/MM/DD> <HH:MM:SS> <filename>: <log line>
-        //     // Example:
-        //     // ERROR 2021/09/23 13:08:34 shortcodes/file.md: Error here
-        //     const errorLine = errorLog.split(" ")
-        //     const filename = errorLine[3].replace(":", "")
-        //     const error = errorLine.slice(4).join(" ")
-        //     if (map[filename]) {
-        //       map[filename].push(error);
-        //     } else {
-        //       map[filename] = [error];
-        //     }
-        //     return map;
-        //   }, {});
-
-        fs.writeFileSync(path.resolve(testDir, jestHugoConfig.publishDir, 'output.err.json'), JSON.stringify(output, null, 2));
+          expectedErrorGroups.push(group);
+        }
       }
-      // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
-      console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error ); // green color output
-    }
+
+      output[key] = expectedErrorGroups;
+    });
+
+    console.log("grouping", output);
+
+    fs.writeFileSync(path.resolve(outputDir, 'output.err.json'), JSON.stringify(output, null, 2));
+
+    // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
+    console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error); // green color output
   }
 };

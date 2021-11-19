@@ -3,14 +3,6 @@ const fs = require('fs');
 const crypto = require('crypto');
 const cheerio = require('cheerio');
 
-/*
-  Regex representing a test case
-  <test name="test name">
-    <!-- Test case here -->
-  </test>
-*/
-const regex = new RegExp(/<test.*?name="([^"]*?)".*?>((?:.*?\r?\n?)*?)<\/test>/gi);
-
 /**
  * Returns the path to index.html output file related to the test file
  * 
@@ -34,15 +26,6 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
 }
 
 /**
- * Return the "{folder}/{file}.md" part.
- */
- function extractPathFromErrorf(output) {
-  var regexp = /(.*).md:/
-  var matches = regexp.exec(output)
-  return (matches && matches.length > 0) ? matches[1] : ""
-}
-
-/**
  * Generate test cases from the test file
  * 
  * @param
@@ -63,10 +46,7 @@ function generateTestCases(testPath, errors) {
   console.log('');
   const generatedTestCases = tests.map((i, test) => {
     const testTitle = test.attribs.name;
-    // Normalize file paths in errors ("{folder}\{file}.md: ..." => "{folder}/{file}.md: ...")
-    const filepath = extractPathFromErrorf(testCases[key])
     const value = $(test).html()
-      .replace(filepath, filepath.replace(/\\/g, '/'))
       .replace(/[^\\]'/g, '\\\'')
       .replace(/\r\n/g, '\\n') // CRLF on Windows with Hugo 0.60+
       .replace(/\n/g, '\\n');
