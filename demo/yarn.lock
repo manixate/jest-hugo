@@ -1636,7 +1636,6 @@ jest-haste-map@^27.3.1:
     cheerio "^1.0.0-rc.10"
     js-beautify "1.14.0"
     lodash.merge "4.6.2"
-    lodash.unescape "4.0.1"
     tmp "0.2.1"
 
 jest-jasmine2@^27.3.1:
@@ -1999,11 +1998,6 @@ lodash.merge@4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
-
-lodash.unescape@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
-  integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
 
 lodash@^4.7.0:
   version "4.17.21"
