@@ -1,14 +1,10 @@
-const testDir = process.env.JEST_HUGO_TEST_DIR;
+const testDir = process.env.JEST_HUGO_TEST_DIR
 
 module.exports = {
   transform: {
     "\\.md$": require.resolve("./jest/transform.js")
   },
-  moduleFileExtensions: [
-    "js",
-    "md",
-    "html"
-  ],
+  moduleFileExtensions: ["js", "md", "html"],
   testMatch: [`**/${testDir || "tests"}/**/!(*.ignore).md`],
   snapshotSerializers: [require.resolve("./jest/serializer.js")],
   noStackTrace: true,
