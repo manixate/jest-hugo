@@ -34,7 +34,6 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
  * @returns {string} Generated test case string
  */
 function generateTestCases(testPath, errors) {
-  console.log("errors", errors)
   const fileData = fs.readFileSync(testPath, "utf-8")
 
   const $ = cheerio.load(fileData, null, false)
@@ -43,7 +42,6 @@ function generateTestCases(testPath, errors) {
     return []
   }
 
-  console.log("")
   const generatedTestCases = tests
     .map((i, test) => {
       const testTitle = test.attribs.name
@@ -107,7 +105,6 @@ module.exports = {
       .digest("hex")
   },
   process: function (source, filepath) {
-    console.log("filepath", filepath)
     const jestHugoOutputDir = process.env.JEST_HUGO_OUTPUT_DIR
     const jestHugoContentDir = process.env.JEST_HUGO_CONTENT_DIR
 

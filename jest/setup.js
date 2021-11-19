@@ -67,12 +67,6 @@ module.exports = async (globalConfig) => {
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" })
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig))
 
-    // Creates .output if it doesn't exist
-    const outputDirExists = fs.existsSync(outputDir)
-    if (!outputDirExists) {
-      fs.mkdirSync(outputDir)
-    }
-
     // Run Hugo
     const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable
     await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name], {
@@ -105,7 +99,6 @@ module.exports = async (globalConfig) => {
       }, {})
     const output = {}
     Object.entries(groupedLogByFilename).forEach(([key, detail]) => {
-      console.log("key", key, detail)
       const expectedErrorGroups = []
       for (let index = 0; index < detail.length; index++) {
         const logDetail = detail[index]
@@ -126,8 +119,6 @@ module.exports = async (globalConfig) => {
 
       output[key] = expectedErrorGroups
     })
-
-    console.log("grouping", output)
 
     fs.writeFileSync(path.resolve(outputDir, "output.err.json"), JSON.stringify(output, null, 2))
 
