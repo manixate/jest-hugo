@@ -1,6 +1,6 @@
 {
   "baseURL": "http://localhost/",
-  "disableKinds": ["taxonomyTerm", "home"],
+  "disableKinds": ["taxonomyTerm", "home", "sitemap"],
   "languageCode": "en-us",
   "title": "Demo for Jest Hugo",
   "markup": {

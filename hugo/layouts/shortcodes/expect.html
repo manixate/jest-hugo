@@ -1,0 +1,8 @@
+{{ $error := (.Get "error") }}
+
+{{/* Compute a unique id for the assertion  */}}
+{{ $seed := printf "%s" .Page.File.Path | printf "%d %s" now.Nanosecond | printf "%s" }}
+{{ $internal_id := delimit (shuffle (split (md5 $seed) "" )) "" }}
+
+{{- warnf "%s: 'jest-expected-error' %s|%s" .Page.File.Path $internal_id $error }}
+<div id="expected-error" data-id="{{ $internal_id }}" data-error="{{ $error }}" />
