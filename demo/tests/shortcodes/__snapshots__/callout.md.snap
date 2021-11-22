@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`callout should render successful with alert 1`] = `
+exports[`callout should render successfully with alert 1`] = `
 <div>
   <div class="callout callout-alert"
     role="callout">
@@ -11,7 +11,7 @@ exports[`callout should render successful with alert 1`] = `
 </div>
 `;
 
-exports[`callout should render successful with warning 1`] = `
+exports[`callout should render successfully with warning 1`] = `
 <div>
   <div class="callout callout-warning"
     role="callout">

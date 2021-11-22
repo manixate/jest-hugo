@@ -1,9 +1,9 @@
 ---
 ---
 
-<test name="should show error when enter invalid type">
+<test name="should throw error when invalid type">
   {{< expect error="Invalid callout's type 'invalid'. Expecting one of 'alert warning'" >}}
   {{% callout type="invalid" %}}
-  An note type callout
+  Something
   {{% /callout %}}
 </test>
