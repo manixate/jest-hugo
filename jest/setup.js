@@ -8,6 +8,7 @@ tmp.setGracefulCleanup()
 const defaultJestConfig = require("../jest-hugo.config.json")
 const defaultJestHugoTestDir = "tests"
 const defaultJestHugoExecutable = "hugo"
+const debug = process.env.JEST_HUGO_DEBUG || false
 
 const getJestHugoConfig = (rootDir) => {
   const configPath = path.resolve(rootDir, "jest-hugo.config.json")
@@ -63,7 +64,10 @@ module.exports = async (globalConfig) => {
   process.env.JEST_HUGO_OUTPUT_DIR = outputDir
 
   try {
-    // Create temporary hugo config json file. It will be cleaned up automatically.
+    // Delete the previous ".output" dir
+    fs.rmSync(outputDir, { recursive: true, force: true })
+    
+    // Create a temporary hugo config json file. It will be cleaned up automatically.
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" })
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig))
 
@@ -81,8 +85,10 @@ module.exports = async (globalConfig) => {
       throw error
     }
 
+    // Parse stdout that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
     const groupedLogByFilename = error.stdout
       .replace("Building sites … ", "")
+      .replace("Start building sites … ", "")
       .split("\n")
       .filter((s) => (s.startsWith("WARN") && s.indexOf("'jest-expected-error") >= 0) || s.startsWith("ERROR"))
       .reduce((map, log) => {
@@ -122,7 +128,8 @@ module.exports = async (globalConfig) => {
 
     fs.writeFileSync(path.resolve(outputDir, "output.err.json"), JSON.stringify(output, null, 2))
 
-    // stdout will contain errors caused by 'errorf' command prefixed by "ERROR" string
-    console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error) // green color output
+    if (debug) {
+      console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error) // green color output
+    }    
   }
 }
