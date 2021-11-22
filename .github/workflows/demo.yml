@@ -10,7 +10,7 @@ name: Demo
 jobs:
   run:
     runs-on: "${{ matrix.os }}"
-    continue-on-error: true # <---- Temp
+    # continue-on-error: true
     strategy:
       matrix:
         os:
@@ -18,10 +18,8 @@ jobs:
           - windows-latest
           - macos-latest
         hugo:
-          - 0.55.0
-          - 0.61.0
           - 0.62.0
-          # - latest <---- Uncomment when https://github.com/manixate/jest-hugo/issues/20 is fixed
+          - latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
