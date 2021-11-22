@@ -4,7 +4,7 @@
   "description": "Test your hugo theme including shortcodes using Jest",
   "main": "jest-preset.js",
   "scripts": {
-    "format": "prettier --check .",
+    "format": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

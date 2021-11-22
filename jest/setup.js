@@ -66,7 +66,7 @@ module.exports = async (globalConfig) => {
   try {
     // Delete the previous ".output" dir
     fs.rmSync(outputDir, { recursive: true, force: true })
-    
+
     // Create a temporary hugo config json file. It will be cleaned up automatically.
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" })
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig))
@@ -130,6 +130,6 @@ module.exports = async (globalConfig) => {
 
     if (debug) {
       console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error) // green color output
-    }    
+    }
   }
 }
