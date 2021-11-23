@@ -1,6 +1,6 @@
 const childProcess = require("child_process")
 const path = require("path")
-const fs = require("fs")
+const fs = require("fs-extra")
 const merge = require("lodash.merge")
 const tmp = require("tmp")
 tmp.setGracefulCleanup()
@@ -18,6 +18,15 @@ const getJestHugoConfig = (rootDir) => {
     customConfig = require(configPath)
   }
 
+  // Create a temporary layout dir
+  const tmpLayoutDir = tmp.dirSync().name
+  const thisLayoutDir = path.resolve(__dirname, "../hugo/layouts")
+  fs.copySync(thisLayoutDir, tmpLayoutDir, {})
+  if (customConfig && customConfig.layoutDir) {
+    const projectLayoutDir = path.resolve(rootDir, customConfig.layoutDir)
+    fs.copySync(projectLayoutDir, tmpLayoutDir, {})
+  }
+
   let config = merge(
     defaultJestConfig,
     {
@@ -25,14 +34,14 @@ const getJestHugoConfig = (rootDir) => {
       publishDir: ".output",
       resourceDir: ".output/.tmp",
       dataDir: "data",
-      layoutDir: path.resolve(__dirname, "../hugo/layouts"),
       themesDir: rootDir
     },
     customConfig
   )
 
+  config.layoutDir = tmpLayoutDir
+
   // In case the config uses relative paths
-  config.layoutDir = path.resolve(rootDir, config.layoutDir)
   config.themesDir = path.resolve(rootDir, config.themesDir)
   return config
 }
