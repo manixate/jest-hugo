@@ -51,24 +51,30 @@ function generateTestCases(testPath, errors) {
         .replace(/\r\n/g, "\\n") // CRLF on Windows with Hugo 0.60+
         .replace(/\n/g, "\\n")
 
-      // Test for asserting on errors
       const expectedError = $("div#expected-error", test)
       if (expectedError.length > 0) {
+        // Error test case
         const errorId = expectedError.attr("data-id")
         const errorText = expectedError.attr("data-error")
-        // Pick the corresponding error from the logs
-        const error = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual.replace(/'/g, "\\'")
-
         const expected = errorText.replace(/'/g, "\\'")
-
-        return [
-          `it ('${testTitle}', () => {`,
-          `  const actual = '${error}';`,
-          `  const expected = '${expected}';`,
-          `  expect(actual).toEqual(expected);`,
-          "})"
-        ].join("\n")
+        // Pick the corresponding error from the logs
+        const actual = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual
+        if (!actual) {
+          // No error raised
+          return [`it ('${testTitle}', () => {`, `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"].join("\n")
+        } else {
+          // Compare errors
+          const error = actual.replace(/'/g, "\\'")
+          return [
+            `it ('${testTitle}', () => {`,
+            `  const actual = '${error}';`,
+            `  const expected = '${expected}';`,
+            `  expect(actual).toEqual(expected);`,
+            "})"
+          ].join("\n")
+        }
       } else {
+        // Nominal test case, use snapshots
         return [
           `it ('${testTitle}', () => {`,
           `  const value = '${value}';`,
