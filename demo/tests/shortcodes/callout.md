@@ -1,27 +1,28 @@
 ---
 ---
-<div> <!-- Only needed with Hugo < v0.60.0 -->
-  <test name="should render successful with alert">
+
+<test name="should render successfully with alert">
   {{% callout type="alert" %}}
   An alert type callout
   {{% /callout %}}
-  </test>
+</test>
 
-  <test name="should render successful with warning">
+<test name="should render successfully with warning">
   {{% callout type="warning" %}}
   An warning type callout
   {{% /callout %}}
-  </test>
+</test>
 
-  <test name="should show error when missing type parameter.">
+<test name="should throw error when missing type parameter">
+  {{< expect error="Invalid callout's type '%!s(<nil>)'. Expecting one of 'alert warning'" >}}
   {{% callout %}}
-  An note type callout
+  Something
   {{% /callout %}}
-  </test>
+</test>
 
-  <test name="should show error when enter invalid type.">
+<test name="should throw error when invalid type">
+  {{< expect error="Invalid callout's type 'invalid'. Expecting one of 'alert warning'" >}}
   {{% callout type="invalid" %}}
-  An note type callout
+  Something
   {{% /callout %}}
-  </test>
-</div>
+</test>
