@@ -74,7 +74,7 @@ module.exports = async (globalConfig) => {
 
   try {
     // Delete the previous ".output" dir
-    fs.rmSync(outputDir, { recursive: true, force: true })
+    fs.removeSync(outputDir)
 
     // Create a temporary hugo config json file. It will be cleaned up automatically.
     const hugoConfigFile = tmp.fileSync({ postfix: ".json" })
