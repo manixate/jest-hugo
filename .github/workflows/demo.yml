@@ -15,7 +15,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          # - windows-latest # uncomment when this is fixed: https://github.com/peaceiris/actions-hugo/issues/608
           # - macos-latest # uncomment when this is fixed: https://github.com/peaceiris/actions-hugo/issues/605
         hugo:
           - 0.62.0
