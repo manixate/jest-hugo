@@ -34,7 +34,7 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
  */
 function generateTestCases(testPath, errors) {
   const fileData = fs.readFileSync(testPath, "utf-8")
-  const tests = {};
+  const tests = {}
   /*
     Regex representing a test case
     <test name="test name">
@@ -42,23 +42,23 @@ function generateTestCases(testPath, errors) {
     </test>
   */
   const testCasesRegex = /<test.*?name="([^"]*?)".*?>((?:.*?\r?\n?)*?)<\/test>/gi
-  let match;
+  let match
   do {
-    match = testCasesRegex.exec(fileData);
+    match = testCasesRegex.exec(fileData)
     if (match) {
-      tests[match[1]] = match[2];
+      tests[match[1]] = match[2]
     }
-  } while (match);
+  } while (match)
 
   // Create test cases
   const generatedTestCases = []
   for (key in tests) {
     const value = tests[key]
-      .replace(/\\/g, '/') // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
+      .replace(/\\/g, "/") // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
       .replace(/\r\n/g, "\\n") // CRLF on Windows with Hugo 0.60+
-      .replace(/\n/g, '\\n');
+      .replace(/\n/g, "\\n")
 
-    const testTitle = key.replace(/[^\\]'/g, '\\\'')
+    const testTitle = key.replace(/[^\\]'/g, "\\'")
     /*
       Regex representing error
       <div id="expected-error" data-id="<error-title>" data-error="<error-text>" />
@@ -73,28 +73,31 @@ function generateTestCases(testPath, errors) {
       const actual = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual
       if (!actual) {
         // No error raised
-        generatedTestCases.push([
-          `it ('${testTitle}', () => {`, 
-          `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"
-        ].join("\n"))
+        generatedTestCases.push(
+          [`it ('${testTitle}', () => {`, `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"].join("\n")
+        )
       } else {
         // Compare errors
-        generatedTestCases.push([
-          `it ('${testTitle}', () => {`,
-          `  const actual = \`${actual}\`;`,
-          `  const expected = \`${expected}\`;`,
-          `  expect(actual).toEqual(expected);`,
-          "})"
-        ].join("\n"))
+        generatedTestCases.push(
+          [
+            `it ('${testTitle}', () => {`,
+            `  const actual = \`${actual}\`;`,
+            `  const expected = \`${expected}\`;`,
+            `  expect(actual).toEqual(expected);`,
+            "})"
+          ].join("\n")
+        )
       }
     } else {
       // Nominal test case, use snapshots
-      generatedTestCases.push([
-        `it ('${testTitle}', () => {`,
-        `  const value = \`${value}\`;`,
-        "  expect({custom: 'beautify', input: value}).toMatchSnapshot();",
-        "})"
-      ].join("\n"))
+      generatedTestCases.push(
+        [
+          `it ('${testTitle}', () => {`,
+          `  const value = \`${value}\`;`,
+          "  expect({custom: 'beautify', input: value}).toMatchSnapshot();",
+          "})"
+        ].join("\n")
+      )
     }
   }
   return generatedTestCases
@@ -129,7 +132,7 @@ module.exports = {
     const hugoTestPath = findHugoTestOutputPath(filepath, jestHugoContentDir, jestHugoOutputDir)
     const testName = path.basename(path.dirname(hugoTestPath))
 
-    let errors = {};
+    let errors = {}
     const errorFile = path.resolve(jestHugoOutputDir, "output.err.json")
     if (fs.existsSync(errorFile)) {
       errors = JSON.parse(fs.readFileSync(errorFile))
