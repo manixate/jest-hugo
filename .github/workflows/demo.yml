@@ -30,7 +30,7 @@ jobs:
           extended: false
       - name: Run demo
         run: |
-          yarn install
+          npm install
           cd demo
-          yarn install
-          yarn run jest
+          npm install
+          npm run jest
