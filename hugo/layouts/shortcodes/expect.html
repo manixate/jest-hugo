@@ -5,4 +5,4 @@
 {{ $internal_id := delimit (shuffle (split (md5 $seed) "" )) "" }}
 
 {{- warnf "%s: 'jest-expected-error' %s|%s" .Page.File.Path $internal_id $error }}
-<div id="expected-error" data-id="{{ $internal_id }}">{{ $error | safeHTML }}"</div>
+<div id="expected-error" data-id="{{ $internal_id }}">{{ $error | safeHTML }}</div>
