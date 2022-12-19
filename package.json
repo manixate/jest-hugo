@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/manixate/jest-hugo#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.10",
     "fs-extra": "^10.0.0",
     "js-beautify": "1.14.0",
     "lodash.merge": "4.6.2",
