@@ -48,17 +48,27 @@ const getJestHugoConfig = (rootDir) => {
 
 const extractInfoFromLog = (logLine) => {
   // Each log line is of format:
-  // <level> <YYYY/MM/DD> <HH:MM:SS> <filename>: <log line>
+  // <level> <YYYY/MM/DD> <HH:MM:SS> <some optional extra info>? "<full path to file>:<line>:<column>": <log line>
   // Example:
-  // ERROR 2021/09/23 13:08:34 shortcodes/file.md: Error here
+  // ERROR 2023/03/04 12:22:11 "<test dir>/shortcodes/file.md:17:3": Error here
   const logSplit = logLine.split(" ")
   const level = logSplit[0]
-  const filename = logSplit[3].replace(":", "")
+
+  /**
+    TODO: Special handling for REF_NOT_FOUND errors
+    ERROR 2023/03/04 12:22:11 [en] REF_NOT_FOUND: Ref "invalid_reference.md": "<test dir>/shortcodes/file.md:17:3": page not found
+  */
+  const position = logSplit[3].replace(/:$/, "").replace(/^"(.*)"$/, "$1")
+  const [filename, line, column] = position.split(":")
   const log = logSplit.slice(4).join(" ")
+
+  // Throw error/warning if filename is not a path
 
   return {
     level: level,
     filename: filename,
+    line: line,
+    column: column,
     log: log
   }
 }
@@ -94,21 +104,25 @@ module.exports = async (globalConfig) => {
       throw error
     }
 
+    console.error(error.stdout)
+
     // Parse stdout that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
     const groupedLogByFilename = error.stdout
       .replace("Building sites … ", "")
       .replace("Start building sites … ", "")
       .split("\n")
-      .filter((s) => (s.startsWith("WARN") && s.indexOf("'jest-expected-error") >= 0) || s.startsWith("ERROR"))
+      .filter((s) => s.startsWith("ERROR"))
       .reduce((map, log) => {
         const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "))
         if (map[logDetail.filename]) {
           map[logDetail.filename].push({
             level: logDetail.level,
-            log: logDetail.log
+            log: logDetail.log,
+            line: logDetail.line,
+            column: logDetail.column
           })
         } else {
-          map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log }]
+          map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log, line: logDetail.line, column: logDetail.column }]
         }
         return map
       }, {})
@@ -135,7 +149,7 @@ module.exports = async (globalConfig) => {
       output[key] = expectedErrorGroups
     })
 
-    fs.writeFileSync(path.resolve(outputDir, "output.err.json"), JSON.stringify(output, null, 2))
+    fs.writeFileSync(path.resolve(outputDir, "output.err.json"), JSON.stringify(groupedLogByFilename, null, 2))
 
     if (debug) {
       console.log("\x1b[32m%s\x1b[0m", "\n\nHugo build successful\n", "with warning", error) // green color output

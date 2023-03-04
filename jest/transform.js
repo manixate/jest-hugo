@@ -24,6 +24,41 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
   }
 }
 
+function parseTestCases(content) {
+  const testCasesRegex = /<test\s+((?:[\w-]+="[^"]*"\s*)*)>([\s\S]*?)<\/test>/gi
+  const attributesRegex = /(\w+)="(.*?)"/gi
+  const tests = {}
+
+  // Add line numbers to the content
+  const randomUUID = crypto.randomUUID()
+  const numberedContent = content.split('\n').map((val, index) => `${val}|${randomUUID}|${index + 1}`).join('\n')
+  const lineNumberRegex = new RegExp(`\\|${randomUUID}\\|\\d+$`, 'gim')
+
+  let testMatch
+  do {
+    testMatch = testCasesRegex.exec(numberedContent)
+    if (testMatch) {
+      const test = {}
+      const allAttributes = testMatch[1]
+  
+      // Replace line number we added above
+      test['content'] = testMatch[2].replace(lineNumberRegex, '')
+      for (const match of allAttributes.matchAll(attributesRegex)) {
+        const attrName = match[1].replace(lineNumberRegex, '')
+        const attrValue = match[2].replace(lineNumberRegex, '')
+  
+        test[attrName] = attrValue
+      }
+      const lines = testMatch[0].split('\n')
+      test['start'] = +lines[0].split(`|${randomUUID}|`).pop()
+      test['end'] = test['start'] + lines.length - 1
+
+      tests[test['name']] = test
+    }
+  } while (testMatch)
+  return tests
+}
+
 /**
  * Generate test cases from the test file
  *
@@ -34,47 +69,41 @@ function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
  */
 function generateTestCases(testPath, errors) {
   const fileData = fs.readFileSync(testPath, "utf-8")
-  const tests = {}
   /*
     Regex representing a test case
     <test name="test name">
       <!-- Test case here -->
     </test>
   */
-  const testCasesRegex = /<test.*?name="([^"]*?)".*?>((?:.*?\r?\n?)*?)<\/test>/gi
-  let match
-  do {
-    match = testCasesRegex.exec(fileData)
-    if (match) {
-      tests[match[1]] = match[2]
-    }
-  } while (match)
+  const tests = parseTestCases(fileData)
+  // Merge sourceTests and test outputs
+  Object.keys(tests).forEach(key => {
+    const test = tests[key]
+    test.error = errors[test.name]
+  })
 
   // Create test cases
   const generatedTestCases = []
   for (key in tests) {
-    const value = tests[key]
+    const test = tests[key]
+    const value = test['content']
       .replace(/\\/g, "/") // Normalize file paths in errors ("folder\\file.md: ..." => "folder/file.md: ...")
       .replace(/\r\n/g, "\\n") // CRLF on Windows with Hugo 0.60+
       .replace(/\n/g, "\\n")
 
-    const testTitle = key.replace(/[^\\]'/g, "\\'")
-    /*
-      Regex representing error
-      <div id="expected-error" data-id="<error-title>" data-error="<error-text>" />
-    */
-    const errorRegex = /<div.*?id="expected-error"(?:.*?\r?\n?).*data-id="(.*)">((?:.*?\r?\n?)*?)<\/div>/gi
-    const errorMatch = errorRegex.exec(value)
-    if (errorMatch && errorMatch.length >= 2) {
-      // Error test case
-      const errorId = errorMatch[1]
-      const expected = errorMatch[2]
+    const testTitle = test.name
+    if (test.expected) {
       // Pick the corresponding error from the logs
-      const actual = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual
+      const actual = test.error
+      const expected = test.expected
       if (!actual) {
         // No error raised
         generatedTestCases.push(
-          [`it ('${testTitle}', () => {`, `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"].join("\n")
+          [
+            `it ('${testTitle}', () => {`,
+            `  throw new Error('No error raised. Was expecting: "${expected.replaceAll("'", "\\'")}"');`,
+            "})"
+          ].join("\n")
         )
       } else {
         // Compare errors
@@ -101,6 +130,32 @@ function generateTestCases(testPath, errors) {
     }
   }
   return generatedTestCases
+}
+
+const mapErrorToTest = (source, errors) => {
+  const tests = parseTestCases(source)
+  // Find the closest test
+  const errorMapping = errors.reduce((acc, error) => {
+    const errorLine = error.line
+    let testForError
+    for (const key in tests) {
+      const test = tests[key]
+      if (errorLine >= test.start && errorLine <= test.end) {
+        testForError = test
+        break
+      }
+    }
+
+    if (testForError) {
+      acc[testForError.name] = error.log
+    } else {
+      acc['unknown'] = [...acc['unknown'], error.log]
+    }
+
+    return acc
+  }, {})
+
+  return errorMapping
 }
 
 module.exports = {
@@ -138,9 +193,7 @@ module.exports = {
       errors = JSON.parse(fs.readFileSync(errorFile))
     }
 
-    const relativeFilePath = path.relative(jestHugoContentDir, filepath)
-
-    const testCases = generateTestCases(hugoTestPath, errors[relativeFilePath])
+    const testCases = generateTestCases(hugoTestPath, mapErrorToTest(source, errors[filepath]))
     const code = [`describe('${testName}', () => {`, testCases.join("\n\n"), "})"].join("\n")
 
     return {
