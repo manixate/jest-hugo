@@ -13,15 +13,13 @@
   {{% /callout %}}
 </test>
 
-<test name="should throw error when missing type parameter">
-  {{< expect error="Invalid callout's type '%!s(<nil>)'. Expecting one of 'alert warning'" >}}
+<test name="should throw error when missing type parameter" error="Invalid callout's type '%!s(<nil>)'. Expecting one of 'alert warning'">
   {{% callout %}}
   Something
   {{% /callout %}}
 </test>
 
-<test name="should throw error when invalid type">
-  {{< expect error="Invalid callout's type 'invalid'. Expecting one of 'alert warning'" >}}
+<test name="should throw error when invalid type" error="Invalid callout's type 'invalid'. Expecting one of 'alert warning'">
   {{% callout type="invalid" %}}
   Something
   {{% /callout %}}

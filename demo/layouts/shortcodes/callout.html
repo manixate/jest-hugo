@@ -1,10 +1,9 @@
 {{- $validTypes := "alert warning" }}
-{{- $pageInfo := .Page.File.Path }}
 
 {{- $type := cond .IsNamedParams (.Get "type") (.Get 0) }}
 <div>
 {{- if not (in $validTypes $type) }}
-  {{ errorf "%s: Invalid callout's type '%s'. Expecting one of '%s'" $pageInfo $type $validTypes }}
+  {{ errorf "%s: Invalid callout's type '%s'. Expecting one of '%s'" .Position $type $validTypes }}
 {{- else -}}
   {{- $className := printf "callout callout-%s" $type }}
   <div class="{{ $className }}" role="callout">
