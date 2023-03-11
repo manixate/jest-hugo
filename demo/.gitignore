@@ -3,6 +3,7 @@ junit.xml
 
 # Test output
 tests/.output
+.hugo_build.lock
 
 # Node modules
 node_modules
