@@ -142,7 +142,7 @@ module.exports = async (globalConfig) => {
         map[logFilename].push(log)
         return map
       }, {})
-    
+
     const unmappedErrors = groupedLogByFilename["UNKNOWN"]?.reduce((acc, curr) => {
       acc.push(curr.log)
       return acc
@@ -157,7 +157,7 @@ module.exports = async (globalConfig) => {
         "",
         unmappedErrors.join("\n"),
         "",
-        "",
+        ""
       ].join("\n")
 
       throw new Error(errorMessage)

@@ -33,7 +33,7 @@ function parseTestCases(content) {
   */
   const testCasesRegex = /<test\s+((?:[\w-]+="[^"]*"\s*)*)>([\s\S]*?)<\/test>/gi
   const attributesRegex = /(\w+)="(.*?)"/gi
-  
+
   const tests = {}
 
   // Add line numbers to the content so we can deduce which test threw the error
@@ -98,7 +98,7 @@ function generateTestCases(testPath, errors) {
     const testTitle = test.name
     const actualError = test.actualError
     const expectedError = test.error
-    
+
     if (!actualError && !expectedError) {
       // Nominal test case, use snapshots
       generatedTestCases.push(
