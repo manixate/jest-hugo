@@ -105,7 +105,7 @@ module.exports = async (globalConfig) => {
 
     // Run Hugo
     const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable
-    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name], {
+    await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name, "--ignoreCache"], {
       stdio: ["pipe", "pipe", "pipe"],
       encoding: "utf8",
       cwd: testDir
