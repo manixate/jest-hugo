@@ -46,7 +46,12 @@ const getJestHugoConfig = (rootDir) => {
   return config
 }
 
-const extractInfoFromLog = (logLine) => {
+const isSubdirectory = (parent, dir) => {
+  const relative = path.relative(parent, dir)
+  return relative && !relative.startsWith("..") && !path.isAbsolute(relative)
+}
+
+const extractInfoFromLog = (contentDir, logLine) => {
   // Each log line is of format:
   // <level> <YYYY/MM/DD> <HH:MM:SS> <some optional extra info>? "<full path to file>:<line>:<column>": <log line>
   // Example:
@@ -54,22 +59,29 @@ const extractInfoFromLog = (logLine) => {
   const logSplit = logLine.split(" ")
   const level = logSplit[0]
 
-  /**
-    TODO: Special handling for REF_NOT_FOUND errors
-    ERROR 2023/03/04 12:22:11 [en] REF_NOT_FOUND: Ref "invalid_reference.md": "<test dir>/shortcodes/file.md:17:3": page not found
-  */
-  const position = logSplit[3].replace(/:$/, "").replace(/^"(.*)"$/, "$1")
-  const [filename, line, column] = position.split(":")
-  const log = logSplit.slice(4).join(" ")
+  try {
+    if (logSplit.length < 4) {
+      throw new Error("Log length is invalid. It should be more than 4 after splitting by space.")
+    }
+    const position = logSplit[3].replace(/:$/, "").replace(/^"(.*)"$/, "$1")
+    const [filename, line, column] = position.split(":")
+    if (!isSubdirectory(contentDir, filename)) {
+      throw new Error("Log's filename part is not of correct path")
+    }
+    const log = logSplit.slice(4).join(" ")
 
-  // Throw error/warning if filename is not a path
-
-  return {
-    level: level,
-    filename: filename,
-    line: line,
-    column: column,
-    log: log
+    return {
+      level: level,
+      filename: filename,
+      line: line,
+      column: column,
+      log: log
+    }
+  } catch (e) {
+    return {
+      level: level,
+      log: logLine
+    }
   }
 }
 
@@ -79,7 +91,8 @@ module.exports = async (globalConfig) => {
   const testDir = path.resolve(globalConfig.rootDir, process.env.JEST_HUGO_TEST_DIR || defaultJestHugoTestDir)
 
   const outputDir = path.resolve(testDir, jestHugoConfig.publishDir)
-  process.env.JEST_HUGO_CONTENT_DIR = path.resolve(testDir, jestHugoConfig.contentDir)
+  const contentDir = path.resolve(testDir, jestHugoConfig.contentDir)
+  process.env.JEST_HUGO_CONTENT_DIR = contentDir
   process.env.JEST_HUGO_OUTPUT_DIR = outputDir
 
   try {
@@ -112,42 +125,43 @@ module.exports = async (globalConfig) => {
       .replace("Start building sites … ", "")
       .split("\n")
       .filter((s) => s.startsWith("ERROR"))
-      .reduce((map, log) => {
-        const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "))
-        if (map[logDetail.filename]) {
-          map[logDetail.filename].push({
-            level: logDetail.level,
-            log: logDetail.log,
-            line: logDetail.line,
-            column: logDetail.column
-          })
-        } else {
-          map[logDetail.filename] = [{ level: logDetail.level, log: logDetail.log, line: logDetail.line, column: logDetail.column }]
+      .reduce((map, logLine) => {
+        const logDetail = extractInfoFromLog(contentDir, logLine.replace(/\s'jest-expected-error'\s/gi, " "))
+        const logFilename = logDetail.filename ?? "UNKNOWN"
+        const log = {
+          level: logDetail.level,
+          log: logDetail.log,
+          line: logDetail.line,
+          column: logDetail.column
         }
+
+        if (!map[logFilename]) {
+          map[logFilename] = []
+        }
+
+        map[logFilename].push(log)
         return map
       }, {})
-    const output = {}
-    Object.entries(groupedLogByFilename).forEach(([key, detail]) => {
-      const expectedErrorGroups = []
-      for (let index = 0; index < detail.length; index++) {
-        const logDetail = detail[index]
-        const group = {
-          expected: null,
-          actual: null
-        }
-        if (logDetail.level === "WARN") {
-          group.expected = logDetail.log
-          if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
-            group.actual = detail[index + 1].log
-            index++
-          }
+    
+    const unmappedErrors = groupedLogByFilename["UNKNOWN"]?.reduce((acc, curr) => {
+      acc.push(curr.log)
+      return acc
+    }, [])
 
-          expectedErrorGroups.push(group)
-        }
-      }
+    if (!!unmappedErrors) {
+      const errorMessage = [
+        "",
+        "",
+        "Got unknown errors while running jest. Make sure to define expected errors in your tests (see documentation).",
+        "Following are the errors from hugo:",
+        "",
+        unmappedErrors.join("\n"),
+        "",
+        "",
+      ].join("\n")
 
-      output[key] = expectedErrorGroups
-    })
+      throw new Error(errorMessage)
+    }
 
     fs.writeFileSync(path.resolve(outputDir, "output.err.json"), JSON.stringify(groupedLogByFilename, null, 2))
 
