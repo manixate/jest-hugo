@@ -73,8 +73,8 @@ function generateTestCases(testPath, errors) {
       const actual = (errors.find((e) => e.expected.startsWith(`${errorId}|`)) || {}).actual
       if (!actual) {
         // No error raised
-        generatedTestCases.push(
-          [`it ('${testTitle}', () => {`, `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"].join("\n")
+          generatedTestCases.push(
+            [`it ('${testTitle}', () => {`, `  throw new Error(\`No error raised. Was expecting: "${expected}"\`);`, "})"].join("\n")
         )
       } else {
         // Compare errors
