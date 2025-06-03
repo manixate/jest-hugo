@@ -48,13 +48,14 @@ const getJestHugoConfig = (rootDir) => {
 
 const extractInfoFromLog = (logLine) => {
   // Each log line is of format:
-  // <level> <YYYY/MM/DD> <HH:MM:SS> <filename>: <log line>
+  // <level> <filename>: <log line>
   // Example:
-  // ERROR 2021/09/23 13:08:34 shortcodes/file.md: Error here
-  const logSplit = logLine.split(" ")
+  // WARN  shortcodes/file.md: Error here
+
+  const logSplit = logLine.split(/\s+/g)
   const level = logSplit[0]
-  const filename = logSplit[3].replace(":", "")
-  const log = logSplit.slice(4).join(" ")
+  const filename = logSplit[1].replace(":", "")
+  const log = logSplit.slice(2).join(" ")
 
   return {
     level: level,
@@ -88,14 +89,14 @@ module.exports = async (globalConfig) => {
       cwd: testDir
     })
   } catch (error) {
-    if (error.stderr && !error.stdout.includes("ERROR")) {
+    if (!error.stderr.includes("ERROR")) {
       // stderr represent errors
       // stdout will not have "ERROR" string if the errors are during build process e.g parsing failed.
       throw error
     }
 
     // Parse stdout that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
-    const groupedLogByFilename = error.stdout
+    const groupedLogByFilename = error.stderr
       .replace("Building sites … ", "")
       .replace("Start building sites … ", "")
       .split("\n")
