@@ -123,9 +123,9 @@ module.exports = async (globalConfig) => {
         }
         if (logDetail.level === "WARN") {
           group.expected = logDetail.log
-          if (index < detail.length - 1 && detail[index + 1].level === "ERROR") {
-            group.actual = detail[index + 1].log
-            index++
+          const actualError = detail.find((d) => d.level === "ERROR" && d.log === logDetail.log.split("|")[1])
+          if (actualError != null && Object.keys(actualError).length > 0) {
+            group.actual = actualError.log
           }
 
           expectedErrorGroups.push(group)
