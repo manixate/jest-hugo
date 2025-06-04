@@ -73,7 +73,7 @@ const extractInfoFromLog = (logLine, isOlderVersion) => {
 }
 
 /**
- * parse the hugo version string and return the numbers
+ * Parse the hugo version string and return the numbers
  * Hugo version is returned in string example hugo vX.xxx.x-xxx
  * This function returns it as an array of Number [X,xxx,x]
  */
