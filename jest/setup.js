@@ -46,22 +46,54 @@ const getJestHugoConfig = (rootDir) => {
   return config
 }
 
-const extractInfoFromLog = (logLine) => {
-  // Each log line is of format:
-  // <level> <filename>: <log line>
-  // Example:
-  // WARN  shortcodes/file.md: Error here
+const extractInfoFromLog = (logLine, isOlderVersion) => {
+  let filename
+  let log
 
   const logSplit = logLine.split(/\s+/g)
   const level = logSplit[0]
-  const filename = logSplit[1].replace(":", "")
-  const log = logSplit.slice(2).join(" ")
+
+  if (isOlderVersion) {
+    // <level> <YYYY/MM/DD> <HH:MM:SS> <filename>: <log line>
+    // Example: ERROR 2021/09/23 13:08:34 shortcodes/file.md: Error here
+    filename = logSplit[3].replace(":", "")
+    log = logSplit.slice(4).join(" ")
+  } else {
+    // <level> <filename>: <log line>
+    // Example: WARN  shortcodes/file.md: Error here
+    filename = logSplit[1].replace(":", "")
+    log = logSplit.slice(2).join(" ")
+  }
 
   return {
     level: level,
     filename: filename,
     log: log
   }
+}
+
+/**
+ * parse the hugo version string and return the numbers
+ * Hugo version is returned in string example hugo vX.xxx.x-xxx
+ * This function returns it as an array of Number [X,xxx,x]
+ */
+const parseHugoVersion = (version) => {
+  return version.match(/\d+/g).map(Number)
+}
+
+/**
+ * This function compares the current hugo version with version specified by user
+ * returns true if users version is older than current version
+ * @param {*} hugoVersion string
+ * @param {*} currentVersion string
+ * @returns boolean
+ */
+const isOlderVersionFn = (hugoVersion, currentVersion) => {
+  const [a1, a2, a3] = parseHugoVersion(currentVersion)
+  const [b1, b2, b3] = parseHugoVersion(hugoVersion)
+  if (a1 !== b1) return a1 > b1
+  if (a2 !== b2) return a2 > b2
+  return a3 > b3
 }
 
 module.exports = async (globalConfig) => {
@@ -73,6 +105,18 @@ module.exports = async (globalConfig) => {
   process.env.JEST_HUGO_CONTENT_DIR = path.resolve(testDir, jestHugoConfig.contentDir)
   process.env.JEST_HUGO_OUTPUT_DIR = outputDir
 
+  const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable
+
+  // Detect Hugo version
+  const hugoVersion = childProcess
+    .execFileSync(hugoExecutable, ["version"], {
+      encoding: "utf8"
+    })
+    .match(/hugo v(\d+\.\d+\.\d+)/)[1]
+
+  // https://github.com/gohugoio/hugo/pull/13138
+  const isOlderVersion = isOlderVersionFn(hugoVersion, "0.120.0")
+
   try {
     // Delete the previous ".output" dir
     fs.removeSync(outputDir)
@@ -82,27 +126,29 @@ module.exports = async (globalConfig) => {
     fs.writeFileSync(hugoConfigFile.name, JSON.stringify(jestHugoConfig))
 
     // Run Hugo
-    const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable
     await childProcess.execFileSync(hugoExecutable, ["--config", hugoConfigFile.name], {
       stdio: ["pipe", "pipe", "pipe"],
       encoding: "utf8",
       cwd: testDir
     })
   } catch (error) {
-    if (!error.stderr.includes("ERROR")) {
-      // stderr represent errors
-      // stdout will not have "ERROR" string if the errors are during build process e.g parsing failed.
+    // if for older versions stdout doesn't contain the expected error or for newer version stderr doesn't contain expected error
+    // then there's error during the build process and we just simply throw that error
+    const hasErrorLog = isOlderVersion ? error.stdout?.includes("ERROR") : error.stderr?.includes("ERROR")
+    if (!hasErrorLog) {
       throw error
     }
 
-    // Parse stdout that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
-    const groupedLogByFilename = error.stderr
+    const errorLog = isOlderVersion ? error.stdout : error.stderr
+
+    // Parse error log that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
+    const groupedLogByFilename = errorLog
       .replace("Building sites … ", "")
       .replace("Start building sites … ", "")
       .split("\n")
       .filter((s) => (s.startsWith("WARN") && s.indexOf("'jest-expected-error") >= 0) || s.startsWith("ERROR"))
       .reduce((map, log) => {
-        const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "))
+        const logDetail = extractInfoFromLog(log.replace(/\s'jest-expected-error'\s/gi, " "), isOlderVersion)
         if (map[logDetail.filename]) {
           map[logDetail.filename].push({
             level: logDetail.level,
