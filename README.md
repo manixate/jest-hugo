@@ -16,7 +16,7 @@ Tests are written in a _tests_ directory in files having the _.md_ extension.
 
 1. Jest 24+
 2. NodeJS 8+
-3. Hugo >= [v0.62.0](https://github.com/gohugoio/hugo/releases/tag/v0.62.0)
+3. Hugo >= [v0.100.0](https://github.com/gohugoio/hugo/releases/tag/v0.100.0)
 
 ## Usage
 
@@ -91,13 +91,12 @@ You can provide your own Hugo config by creating a `jest-hugo.config.json` file 
 4. Run `npm install` or `yarn install`
 5. Run tests using `npm run jest` or `yarn jest`
 
-The demo was tested with Hugo [v0.62.0](https://github.com/gohugoio/hugo/releases/tag/v0.55.0) and the [latest](https://github.com/gohugoio/hugo/releases/latest) version.
+The demo was tested with Hugo [v0.100.0](https://github.com/gohugoio/hugo/releases/tag/v0.100.0) and the [latest](https://github.com/gohugoio/hugo/releases/latest) version.
 
 ## Known Limitations
 
 - This project requires to enable `unsafe: true` for the Goldmark renderer. See: [`markup.goldmark.renderer`](https://gohugo.io/getting-started/configuration-markup).
 - Ensure that each test file has a front matter (an empty one works too). See [`callout.md`](./demo/tests/shortcodes/callout.md?plain=1) for example.
-- This project leverages the [`warnf`](https://gohugo.io/functions/errorf/) template func introduced with Hugo [v0.62.0](https://github.com/gohugoio/hugo/releases/tag/v0.62.0). For that reason, versions of Hugo before 0.62.0 aren't supported anymore.
 - One single log message is created for multiple calls to [`errorf`](https://gohugo.io/functions/errorf/) with the exact same string. This means a single test file can't output multiple times the same error, and test cases expecting an exact same error message must be defined in their own _.md_ file (see [`demo/tests/shortcodes`](./demo/tests/shortcodes) subdirectory) (see also: [#20](https://github.com/manixate/jest-hugo/issues/20)).
 
 Feel free to give feedback.

@@ -74,7 +74,7 @@ function generateTestCases(testPath, errors) {
       if (!actual) {
         // No error raised
         generatedTestCases.push(
-          [`it ('${testTitle}', () => {`, `  throw new Error('No error raised. Was expecting: "${expected}"');`, "})"].join("\n")
+          [`it ('${testTitle}', () => {`, `  throw new Error(\`No error raised. Was expecting: "${expected}"\`);`, "})"].join("\n")
         )
       } else {
         // Compare errors
