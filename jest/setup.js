@@ -132,14 +132,13 @@ module.exports = async (globalConfig) => {
       cwd: testDir
     })
   } catch (error) {
+    const errorLog = isOlderVersion ? error.stdout : error.stderr
     // if for older versions stdout doesn't contain the expected error or for newer version stderr doesn't contain expected error
     // then there's error during the build process and we just simply throw that error
-    const hasErrorLog = isOlderVersion ? error.stdout?.includes("ERROR") : error.stderr?.includes("ERROR")
+    const hasErrorLog = errorLog?.includes("ERROR")
     if (!hasErrorLog) {
       throw error
     }
-
-    const errorLog = isOlderVersion ? error.stdout : error.stderr
 
     // Parse error log that contains errors caused by 'errorf' prefixed by "ERROR" or "WARN"
     const groupedLogByFilename = errorLog
