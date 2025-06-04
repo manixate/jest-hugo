@@ -18,7 +18,7 @@ jobs:
           # - windows-latest # uncomment when this is fixed: https://github.com/peaceiris/actions-hugo/issues/608
           # - macos-latest # uncomment when this is fixed: https://github.com/peaceiris/actions-hugo/issues/605
         hugo:
-          - 0.62.0
+          - 0.100.0
           - latest
     steps:
       - name: Checkout
