@@ -12,6 +12,8 @@
 Tests are written in a _tests_ directory in files having the _.md_ extension.
 [Jest](https://jestjs.io/) is used for testing. The Jest watch mode is also supported (no need for Hugo in watch mode).
 
+`jest-hugo` also supports Hugo multilingual output resolution for localized test files that use language suffixes such as `page.fr.md`.
+
 ## Requirements
 
 1. Jest 24+
@@ -63,6 +65,23 @@ This project allows asserting errors from [`errorf`](https://gohugo.io/functions
 
 When running the tests, _ERROR YYYY/MM/DD HH:MM:SS shortcodes\\myshortcode.md: Invalid type!_ will be expected to be found in the Hugo output.
 
+#### Localized test files
+
+`jest-hugo` supports Hugo-style language suffixes in test file names such as `page.fr.md` and `_index.fr.md`.
+
+If the suffix matches a configured Hugo language and is **not** the default language, the expected output path is resolved under the corresponding language subdirectory.
+
+Example with `defaultContentLanguage = "en"` and languages `en`, `fr`:
+
+- `tests/page.md` → `.output/page/index.html`
+- `tests/page.en.md` → `.output/page/index.html`
+- `tests/page.fr.md` → `.output/fr/page/index.html`
+
+For `_index` files:
+
+- `tests/docs/_index.md` → `.output/docs/index.html`
+- `tests/docs/_index.fr.md` → `.output/fr/docs/index.html`
+
 ### Running Tests
 
 1. Run tests using `npm run jest`
@@ -82,6 +101,21 @@ You can provide your own Hugo config by creating a `jest-hugo.config.json` file 
 | `JEST_HUGO_TEST_DIR`   | Name of the test directory | "tests" |
 | `JEST_HUGO_EXECUTABLE` | Name of the Hugo command   | "hugo"  |
 | `JEST_HUGO_DEBUG`      | Output additional logs     | false   |
+
+### Multilingual Configuration
+
+For multilingual filename-based output resolution, make sure your Hugo configuration defines a default language and the available languages. Example:
+
+```toml
+defaultContentLanguage = "en"
+
+[languages]
+  [languages.en]
+    weight = 1
+
+  [languages.fr]
+    weight = 2
+```
 
 ## Demo
 

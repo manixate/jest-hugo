@@ -8,6 +8,10 @@ const crypto = require("crypto")
  * If the test is inside <test>/xyz/_index.md then the test output will be in <output>/xyz/index.html
  * If the test is inside <test>/xyz/abc.md then the test output will be in <output>/xyz/abc/index.html
  *
+ * If the filename contains a language suffix (e.g. "page.fr.md") and that language is not the
+ * default language, the output path is rooted under <output>/<lang>/ (e.g. <output>/fr/xyz/page/index.html).
+ * Files in the default language or without a recognised language suffix use <output>/ directly.
+ *
  * @param {string} testPath Path of the test file
  * @param {string} hugoContentDir Path of hugo content directory.
  * @param {string} hugoOutputDir Path of hugo output directory.
@@ -15,12 +19,30 @@ const crypto = require("crypto")
  * @returns {string} Path of the index.html file
  */
 function findHugoTestOutputPath(testPath, hugoContentDir, hugoOutputDir) {
+  const defaultLang = process.env.JEST_HUGO_DEFAULT_LANG || "en"
+  const languages = (process.env.JEST_HUGO_LANGUAGES || "").split(",").filter(Boolean)
+
   const testDirectory = path.parse(path.relative(hugoContentDir, testPath))
 
-  if (testDirectory.base === "_index.md") {
-    return path.resolve(hugoOutputDir, testDirectory.dir, "index.html")
+  // Detect a language suffix in the filename, e.g. "_index.fr.md" or "page.fr.md".
+  // testDirectory.name is the filename without the final ".md", e.g. "_index.fr".
+  const nameParts = testDirectory.name.split(".")
+  let lang = null
+  let baseName = testDirectory.name
+  if (nameParts.length >= 2) {
+    const possibleLang = nameParts[nameParts.length - 1]
+    if (languages.includes(possibleLang) && possibleLang !== defaultLang) {
+      lang = possibleLang
+      baseName = nameParts.slice(0, -1).join(".")
+    }
+  }
+
+  const outputBase = lang ? path.join(hugoOutputDir, lang) : hugoOutputDir
+
+  if (baseName === "_index") {
+    return path.resolve(outputBase, testDirectory.dir, "index.html")
   } else {
-    return path.resolve(hugoOutputDir, testDirectory.dir, testDirectory.name, "index.html")
+    return path.resolve(outputBase, testDirectory.dir, baseName, "index.html")
   }
 }
 

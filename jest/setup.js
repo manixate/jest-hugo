@@ -104,6 +104,8 @@ module.exports = async (globalConfig) => {
   const outputDir = path.resolve(testDir, jestHugoConfig.publishDir)
   process.env.JEST_HUGO_CONTENT_DIR = path.resolve(testDir, jestHugoConfig.contentDir)
   process.env.JEST_HUGO_OUTPUT_DIR = outputDir
+  process.env.JEST_HUGO_DEFAULT_LANG = jestHugoConfig.defaultContentLanguage || "en"
+  process.env.JEST_HUGO_LANGUAGES = Object.keys(jestHugoConfig.languages || {}).join(",")
 
   const hugoExecutable = process.env.JEST_HUGO_EXECUTABLE || defaultJestHugoExecutable
 
