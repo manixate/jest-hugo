@@ -25,7 +25,7 @@
     "fs-extra": "^10.0.0",
     "js-beautify": "1.14.0",
     "lodash.merge": "4.6.2",
-    "tmp": "0.2.1"
+    "tmp": "0.2.4"
   },
   "devDependencies": {
     "prettier": "2.4.1"
